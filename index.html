@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Розрахунок конкурсного балу НМТ</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+            background-color: #f9fafb;
+            margin: 0;
+            padding: 0;
+        }
+        .nmt-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 0;
+            background-color: transparent;
+            box-sizing: border-box;
+        }
+        .nmt-card {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 550px;
+            box-sizing: border-box;
+            border: 1px solid #e0e0e0;
+        }
+        .nmt-card h2 {
+            text-align: center;
+            color: #333;
+            margin: 0 0 25px 0;
+            font-size: 22px;
+            line-height: 1.3;
+        }
+        .nmt-form-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            position: relative;
+        }
+        .nmt-card label {
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+            font-size: 14px;
+            display: block;
+        }
+        .nmt-card input[type="text"],
+        .nmt-card input[type="number"],
+        .nmt-card select {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            width: 100%;
+            box-sizing: border-box;
+            background-color: #fff;
+            color: #333;
+        }
+        .nmt-card input:focus, .nmt-card select:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        
+        .search-wrapper { position: relative; }
+        .search-input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .clear-btn {
+            position: absolute;
+            right: 12px;
+            cursor: pointer;
+            font-size: 18px;
+            color: #999;
+            display: none;
+            user-select: none;
+            z-index: 10;
+        }
+        .clear-btn:hover { color: #333; }
+        .custom-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            margin-top: 5px;
+        }
+        .dropdown-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+            color: #333;
+            transition: background 0.2s;
+        }
+        .dropdown-item:last-child { border-bottom: none; }
+        .dropdown-item:hover { background-color: #f3f4f6; }
+        .dropdown-item strong { color: #4f46e5; }
+        
+        .nmt-radio-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 5px;
+            flex-wrap: wrap;
+        }
+        .nmt-radio-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: normal;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .nmt-hidden { display: none !important; }
+        
+        .input-mode-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .mode-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #444;
+        }
+        .mode-label input { width: auto !important; margin: 0; }
+        
+        .hint-text {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .nmt-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.3s;
+            line-height: normal;
+            box-sizing: border-box;
+        }
+        .nmt-btn:hover { background-color: #4338ca; }
+        
+        #nmt-result {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #eef2ff;
+            border-radius: 10px;
+            text-align: center;
+            color: #312e81;
+            font-size: 18px;
+            display: none;
+            border: 1px solid #c7d2fe;
+        }
+        #nmt-result span {
+            display: block;
+            font-size: 32px;
+            font-weight: bold;
+            margin-top: 10px;
+            color: #4f46e5;
+        }
+        
+        @media (max-width: 600px) {
+            .nmt-card {
+                padding: 20px;
+                width: 90% !important;
+                margin: 0 auto;
+            }
+            .input-mode-container {
+                flex-direction: column;
+                gap: 10px;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="nmt-wrapper">
+    <div class="nmt-card">
+        <h2>Розрахунок конкурсного балу</h2>
+        
+        <div class="nmt-form-group">
+            <label for="yearSelect">Оберіть рік складання НМТ:</label>
+            <select id="yearSelect" onchange="handleYearChange()">
+                <option value="2026" selected>2026</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+            </select>
+        </div>
+
+        <div class="input-mode-container">
+            <label class="mode-label">
+                <input type="radio" name="inputMode" value="test" checked onchange="handleInputModeChange()"> Тестові бали
+            </label>
+            <label class="mode-label">
+                <input type="radio" name="inputMode" value="rating" onchange="handleInputModeChange()"> Рейтингові бали (100-200)
+            </label>
+        </div>
+
+        <div class="nmt-form-group search-wrapper">
+            <label for="specialtyInput">Оберіть спеціальність (пошук):</label>
+            <div class="search-input-container">
+                <input type="text" id="specialtyInput" placeholder="Почніть вводити код або назву..." autocomplete="off">
+                <span class="clear-btn" id="clearBtn" title="Очистити">✕</span>
+            </div>
+            <div class="custom-dropdown" id="specialtyDropdown"></div>
+        </div>
+
+        <div class="nmt-form-group">
+            <label>Українська мова (П1):</label>
+            <input type="number" id="p1" placeholder="8-45" min="0" max="200">
+            <div class="hint-text" id="hint_p1"></div>
+        </div>
+        <div class="nmt-form-group">
+            <label>Математика (П2):</label>
+            <input type="number" id="p2" placeholder="5-32" min="0" max="200">
+            <div class="hint-text" id="hint_p2"></div>
+        </div>
+        
+        <div class="nmt-form-group">
+            <label id="label_p3">Історія України (П3):</label>
+            <select id="p3Select" class="nmt-hidden" onchange="handleInputModeChange()" style="margin-bottom: 15px;">
+                <option value="hist">Історія України</option>
+                <option value="0">Іноземна мова</option>
+                <option value="1">Біологія</option>
+                <option value="2">Фізика</option>
+                <option value="3">Хімія</option>
+            </select>
+            
+            <label id="label_p3_score" class="nmt-hidden">Бал з третього предмету:</label>
+            
+            <input type="number" id="p3" placeholder="9-54" min="0" max="200">
+            <div class="hint-text" id="hint_p3"></div>
+        </div>
+        
+        <div id="p4-block">
+            <div class="nmt-form-group">
+                <label>Четвертий предмет (П4):</label>
+                <select id="subjectSelect" onchange="handleInputModeChange()">
+                    <option value="0">Іноземна мова</option>
+                    <option value="1">Біологія</option>
+                    <option value="2">Фізика</option>
+                    <option value="3">Хімія</option>
+                    <option value="4">Українська література</option>
+                    <option value="5">Географія</option>
+                </select>
+            </div>
+            <div class="nmt-form-group">
+                <label>Бал з четвертого предмету:</label>
+                <input type="number" id="p4" placeholder="5-32" min="0" max="200">
+                <div class="hint-text" id="hint_p4"></div>
+            </div>
+        </div>
+
+        <div class="nmt-form-group nmt-hidden" id="creativeBlock">
+            <label>Бал за творчий конкурс (ТК):</label>
+            <input type="number" id="tk" placeholder="100-200" min="100" max="200">
+            <div class="hint-text">Завжди 100-200</div>
+        </div>
+        
+        <div class="nmt-form-group" id="ou-block">
+            <label>Бал за підготовчі курси (ОУ) (0-10):</label>
+            <input type="number" id="ou" placeholder="0" min="0" max="10" value="0">
+        </div>
+
+        <div class="nmt-form-group">
+            <label for="regionSelect">Оберіть регіон фактичного розташування ЗВО:</label>
+            <select id="regionSelect">
+                <option value="1.00">м. Київ</option>
+                <option value="1.00">Вінницька область</option>
+                <option value="1.00">Волинська область</option>
+                <option value="1.04">Дніпропетровська область</option>
+                <option value="1.00">Донецька область</option>
+                <option value="1.00">Житомирська область</option>
+                <option value="1.00">Закарпатська область</option>
+                <option value="1.07">Запорізька область</option>
+                <option value="1.00">Івано-Франківська область</option>
+                <option value="1.00">Київська область</option>
+                <option value="1.00">Кіровоградська область</option>
+                <option value="1.00">Львівська область</option>
+                <option value="1.07">Миколаївська область</option>
+                <option value="1.07">Одеська область</option>
+                <option value="1.04">Полтавська область</option>
+                <option value="1.00">Рівненська область</option>
+                <option value="1.07">Сумська область</option>
+                <option value="1.00">Тернопільська область</option>
+                <option value="1.07">Харківська область</option>
+                <option value="1.00">Хмельницька область</option>
+                <option value="1.00">Черкаська область</option>
+                <option value="1.00">Чернівецька область</option>
+                <option value="1.04">Чернігівська область</option>
+            </select>
+            <div class="hint-text">Регіональний коефіцієнт підставиться автоматично</div>
+        </div>
+        <div class="nmt-form-group nmt-hidden" id="gkBlock">
+            <label>Галузевий коефіцієнт (ГК):</label>
+            <div style="font-size: 13px; color: #666; margin-bottom: 5px;">Обрана Вами спеціальність має підтримку від держави.<br>Якщо вона є пріоритетом №1 або №2:</div>
+            <div class="nmt-radio-group">
+                <label class="nmt-radio-label"><input type="radio" name="gk" value="1.00" checked> 1.00 (Немає)</label>
+                <label class="nmt-radio-label"><input type="radio" name="gk" value="1.02"> 1.02 (Є)</label>
+            </div>
+        </div>
+        <button class="nmt-btn" onclick="calculateNMT()">Розрахувати</button>
+        <div id="nmt-result"></div>
+    </div>
+</div>
+
+<script>
+
+    const tUkr = {8:100,9:105,10:110,11:120,12:125,13:130,14:134,15:136,16:138,17:140,18:142,19:143,20:144,21:145,22:146,23:148,24:149,25:150,26:152,27:154,28:156,29:157,30:159,31:160,32:162,33:163,34:165,35:167,36:170,37:172,38:175,39:177,40:180,41:183,42:186,43:191,44:195,45:200};
+    const tMath = {5:100,6:108,7:115,8:123,9:131,10:134,11:137,12:140,13:143,14:145,15:147,16:148,17:149,18:150,19:151,20:152,21:155,22:159,23:163,24:167,25:170,26:173,27:176,28:180,29:184,30:189,31:194,32:200};
+    const tHist = {9:100,10:105,11:110,12:115,13:120,14:125,15:130,16:132,17:134,18:136,19:138,20:140,21:141,22:142,23:143,24:144,25:145,26:146,27:147,28:148,29:149,30:150,31:151,32:152,33:154,34:156,35:158,36:160,37:163,38:166,39:168,40:169,41:170,42:172,43:173,44:175,45:177,46:179,47:181,48:183,49:185,50:188,51:191,52:194,53:197,54:200};
+    const tEng = {5:100,6:109,7:118,8:125,9:131,10:134,11:137,12:140,13:143,14:145,15:147,16:148,17:149,18:150,19:151,20:152,21:153,22:155,23:157,24:159,25:162,26:166,27:169,28:173,29:179,30:185,31:191,32:200};
+    const tBio = {7:100,8:107,9:114,10:119,11:124,12:128,13:131,14:134,15:136,16:138,17:140,18:142,19:144,20:145,21:146,22:147,23:148,24:149,25:150,26:151,27:152,28:154,29:156,30:158,31:160,32:162,33:164,34:166,35:168,36:170,37:172,38:175,39:177,40:179,41:182,42:185,43:188,44:192,45:196,46:200};
+    const tPhy = {5:100,6:109,7:118,8:125,9:131,10:134,11:137,12:140,13:143,14:145,15:147,16:148,17:149,18:150,19:151,20:152,21:156,22:160,23:164,24:166,25:169,26:173,27:176,28:179,29:184,30:189,31:194,32:200};
+    const tGeo = {7:100,8:107,9:114,10:119,11:124,12:128,13:131,14:134,15:136,16:138,17:140,18:142,19:144,20:145,21:146,22:147,23:148,24:149,25:150,26:151,27:152,28:154,29:156,30:158,31:160,32:162,33:164,34:166,35:168,36:170,37:172,38:175,39:177,40:179,41:182,42:185,43:188,44:192,45:196,46:200};
+    const tLit = {7:100,8:105,9:110,10:115,11:120,12:125,13:131,14:134,15:136,16:138,17:140,18:142,19:143,20:144,21:145,22:146,23:148,24:149,25:150,26:152,27:154,28:156,29:157,30:159,31:160,32:162,33:163,34:165,35:167,36:170,37:172,38:175,39:177,40:180,41:183,42:186,43:191,44:195,45:200};
+    const tChem = {5:100,6:109,7:118,8:125,9:131,10:134,11:137,12:140,13:143,14:145,15:147,16:148,17:149,18:150,19:151,20:152,21:156,22:160,23:164,24:166,25:169,26:173,27:176,28:179,29:184,30:189,31:194,32:200};
+
+    const tUkr24 = {7:100,8:105,9:110,10:115,11:120,12:125,13:131,14:134,15:136,16:138,17:140,18:142,19:143,20:144,21:145,22:146,23:148,24:149,25:150,26:152,27:154,28:156,29:157,30:159,31:160,32:162,33:163,34:165,35:167,36:170,37:172,38:175,39:177,40:180,41:183,42:186,43:191,44:195,45:200};
+    const tHist24 = {8:100,9:105,10:111,11:116,12:120,13:124,14:127,15:130,16:132,17:134,18:136,19:138,20:140,21:141,22:142,23:143,24:144,25:145,26:146,27:147,28:148,29:149,30:150,31:151,32:152,33:154,34:156,35:158,36:160,37:163,38:166,39:168,40:169,41:170,42:172,43:173,44:175,45:177,46:179,47:181,48:183,49:185,50:188,51:191,52:194,53:197,54:200};
+
+    const tUkr23 = {5:100,6:105,7:110,8:114,9:118,10:122,11:125,12:128,13:131,14:134,15:136,16:138,17:140,18:142,19:143,20:144,21:145,22:146,23:148,24:149,25:150,26:151,27:152,28:153,29:154,30:155,31:156,32:158,33:160,34:162,35:165,36:168,37:171,38:174,39:176,40:179,41:182,42:186,43:190,44:195,45:200};
+    const tMath23 = {4:100,5:107,6:114,7:121,8:126,9:131,10:134,11:137,12:140,13:143,14:145,15:147,16:148,17:149,18:150,19:151,20:152,21:153,22:155,23:157,24:159,25:163,26:167,27:171,28:175,29:181,30:187,31:193,32:200};
+    const tHist23 = {6:100,7:106,8:109,9:112,10:115,11:118,12:121,13:124,14:127,15:130,16:132,17:134,18:136,19:138,20:140,21:141,22:142,23:143,24:144,25:145,26:146,27:147,28:148,29:149,30:150,31:151,32:152,33:153,34:154,35:155,36:156,37:157,38:158,39:159,40:160,41:162,42:164,43:166,44:168,45:170,46:173,47:176,48:178,49:181,50:184,51:188,52:192,53:196,54:200};
+    const tEng23 = {4:100,5:107,6:114,7:121,8:126,9:131,10:134,11:137,12:140,13:143,14:145,15:147,16:148,17:149,18:150,19:151,20:152,21:153,22:155,23:157,24:159,25:163,26:167,27:171,28:175,29:181,30:187,31:193,32:200};
+    const tBio23 = {5:100,6:105,7:110,8:114,9:118,10:122,11:125,12:128,13:131,14:134,15:136,16:138,17:140,18:142,19:144,20:145,21:146,22:147,23:148,24:149,25:150,26:151,27:152,28:153,29:154,30:155,31:156,32:157,33:158,34:160,35:162,36:165,37:168,38:171,39:174,40:176,41:179,42:182,43:186,44:190,45:195,46:200};
+    const tPhy23 = {4:100,5:107,6:114,7:121,8:126,9:131,10:134,11:137,12:140,13:143,14:145,15:147,16:148,17:149,18:150,19:151,20:152,21:153,22:155,23:157,24:159,25:163,26:167,27:171,28:175,29:181,30:187,31:193,32:200};
+    const tChem23 = {4:100,5:106,6:111,7:116,8:121,9:125,10:129,11:132,12:135,13:138,14:140,15:142,16:143,17:144,18:146,19:147,20:148,21:149,22:150,23:151,24:152,25:153,26:154,27:156,28:158,29:160,30:162,31:164,32:167,33:170,34:173,35:177,36:181,37:185,38:190,39:195,40:200};
+
+    function getRating(raw, table, min, max) {
+        if(isNaN(raw) || raw < min) return 0;
+        if(raw > max) return 200;
+        return table[raw] || 0;
+    }
+
+    const rawData = `
+A2 Дошкільна освіта;0.35;0.35;0.4;0.4;0.4;0.35;0.35;0.35;0.4
+A3 Початкова освіта;0.35;0.35;0.4;0.4;0.4;0.35;0.35;0.35;0.4
+A4.01 Середня освіта (Українська мова і література);0.5;0.2;0.3;0.4;0.25;0.3;0.3;0.5;0.3
+A4.02 Середня освіта (Мова та зарубіжна література);0.4;0.3;0.3;0.5;0.25;0.35;0.35;0.4;0.3
+A4.03 Середня освіта (Історія та громадянська освіта);0.3;0.2;0.5;0.3;0.3;0.3;0.3;0.3;0.3
+A4.04 Середня освіта (Математика);0.3;0.5;0.2;0.4;0.3;0.5;0.4;0.2;0.2
+A4.05 Середня освіта (Біологія та здоров’я людини);0.3;0.35;0.35;0.4;0.5;0.4;0.4;0.3;0.4
+A4.06 Середня освіта (Хімія);0.3;0.35;0.35;0.4;0.4;0.4;0.5;0.3;0.35
+A4.07 Середня освіта (Географія);0.3;0.35;0.35;0.4;0.4;0.4;0.4;0.3;0.5
+A4.08 Середня освіта (Фізика та астрономія);0.3;0.5;0.2;0.4;0.3;0.5;0.4;0.2;0.2
+A4.09 Середня освіта (Інформатика);0.35;0.5;0.25;0.3;0.3;0.5;0.4;0.3;0.25
+A4.10 Середня освіта (Технології);0.35;0.5;0.25;0.23;0.3;0.5;0.4;0.3;0.25
+A4.11 Середня освіта (Фізична культура);0.4;0.3;0.4;0.3;0.4;0.4;0.4;0.3;0.4
+A4.12 Середня освіта (Мистецтво. Образотворче мистецтво);0.4;0.25;0.35;0.35;0.2;0.3;0.3;0.35;0.35
+A4.13 Середня освіта (Мистецтво. Музичне мистецтво);0.4;0.25;0.35;0.35;0.2;0.3;0.3;0.35;0.35
+A4.15 Середня освіта (Природничі науки);0.35;0.5;0.25;0.3;0.4;0.4;0.4;0.3;0.4
+A4.16 Середня освіта (Захист України);0.4;0.3;0.4;0.3;0.4;0.4;0.4;0.3;0.4
+A5.3x Професійна освіта (спеціалізації 31-39);0.35;0.5;0.25;0.3;0.3;0.4;0.4;0.2;0.25
+A5 Професійна освіта (інші спеціалізації);0.35;0.4;0.25;0.25;0.3;0.4;0.4;0.3;0.25
+A6.01 Спеціальна освіта (Логопедія);0.4;0.3;0.3;0.4;0.5;0.4;0.4;0.3;0.3
+A6.0x Спеціальна освіта (інші спеціалізації);0.4;0.3;0.3;0.4;0.5;0.4;0.4;0.3;0.3
+A7 Фізична культура і спорт;0.25;0.2;0.2;0.2;0.2;0.2;0.2;0.2;0.2;0.25
+B1.01/03 Аудіовізуальне мистецтво та виробництво (Аудіовізуальне мистецтво, Звукорежисура);0.2;0.2;0.2;0.1;0.1;0.1;0.1;0.1;0.1;0.7
+B1.02/04 Аудіовізуальне мистецтво та виробництво (Кіно-,медіавиробництво, Кіно-,медіазнавство);0.35;0.25;0.5;0.3;0.2;0.2;0.2;0.4;0.2
+B2 Дизайн;0.25;0.2;0.2;0.2;0.2;0.2;0.2;0.2;0.2;0.7
+B3 Декоративне мистецтво та ремесла;0.075;0.075;0.075;0.075;0.075;0.075;0.075;0.075;0.075;0.7
+B4.01/02 Образотворче мистецтво та реставрація (Візуальні мистецтва, Реставрація);0.075;0.075;0.075;0.075;0.075;0.075;0.075;0.075;0.075;0.7
+B4.03 Образотворче мистецтво та реставрація (Мистецтвознавство);0.35;0.25;0.5;0.3;0.2;0.2;0.2;0.4;0.2
+B5 Музичне мистецтво;0.075;0.075;0.075;0.075;0.075;0.075;0.075;0.075;0.075;0.7
+B6 Перформативні мистецтва;0.075;0.075;0.075;0.075;0.075;0.075;0.075;0.075;0.075;0.7
+B7 Релігієзнавство;0.35;0.25;0.5;0.5;0.2;0.3;0.3;0.45;0.35
+B8 Богослов’я;0.3;0.25;0.45;0.45;0.2;0.3;0.3;0.45;0.25
+B9 Історія та археологія;0.35;0.25;0.5;0.5;0.2;0.3;0.3;0.45;0.35
+B10 Філософія;0.35;0.25;0.5;0.5;0.2;0.3;0.3;0.45;0.35
+B11.01 Філологія (Українська мова та література, фольклористика, прикладна лінгвістика);0.5;0.25;0.25;0.5;0.2;0.3;0.3;0.5;0.25
+B11 Філологія (інші спеціалізації);0.4;0.3;0.3;0.5;0.2;0.3;0.3;0.4;0.3
+B12 Культурологія та музеєзнавство;0.35;0.25;0.5;0.3;0.2;0.3;0.3;0.4;0.4
+B13 Бібліотечна, інформаційна та архівна справа;0.35;0.25;0.5;0.3;0.2;0.3;0.3;0.4;0.4
+C1 Економіка та міжнародні економічні відносини;0.35;0.4;0.25;0.25;0.2;0.3;0.3;0.25;0.35
+C2 Політологія;0.45;0.4;0.4;0.5;0.2;0.3;0.3;0.3;0.4
+C3 Міжнародні відносини;0.45;0.4;0.4;0.5;0.2;0.3;0.3;0.3;0.4
+C4 Психологія;0.35;0.4;0.25;0.3;0.4;0.3;0.3;0.25;0.25
+C5 Соціологія;0.35;0.4;0.25;0.3;0.2;0.3;0.3;0.25;0.25
+C6 Географія та регіональні студії;0.3;0.35;0.35;0.35;0.35;0.4;0.4;0.2;0.5
+C7 Журналістика;0.45;0.4;0.4;0.5;0.2;0.3;0.3;0.4;0.3
+D1 Облік і оподаткування;0.35;0.4;0.25;0.25;0.2;0.3;0.3;0.25;0.35
+D2 Фінанси, банківська справа, страхування та фондовий ринок;0.35;0.4;0.25;0.25;0.2;0.3;0.3;0.25;0.35
+D3 Менеджмент;0.35;0.4;0.25;0.25;0.2;0.3;0.3;0.25;0.35
+D4 Публічне управління та адміністрування;0.35;0.4;0.25;0.25;0.2;0.3;0.3;0.25;0.35
+D5 Маркетинг;0.35;0.4;0.25;0.25;0.2;0.3;0.3;0.25;0.35
+D7 Торгівля;0.35;0.4;0.25;0.25;0.2;0.3;0.3;0.25;0.35
+D8 Право;0.45;0.4;0.4;0.5;0.2;0.3;0.3;0.4;0.3
+D9 Міжнародне право;0.45;0.4;0.4;0.5;0.2;0.3;0.3;0.3;0.4
+E1 Біологія та біохімія;0.3;0.35;0.35;0.3;0.5;0.45;0.45;0.3;0.4
+E2 Екологія;0.3;0.35;0.35;0.3;0.5;0.45;0.45;0.3;0.4
+E3 Хімія;0.3;0.5;0.2;0.3;0.35;0.5;0.5;0.2;0.2
+E4 Науки про Землю;0.3;0.5;0.2;0.3;0.35;0.5;0.5;0.2;0.5
+E5 Фізика та астрономія;0.3;0.5;0.2;0.3;0.25;0.5;0.4;0.2;0.2
+E6 Прикладна фізика та наноматеріали;0.3;0.5;0.2;0.3;0.25;0.5;0.4;0.2;0.2
+E7 Математика;0.3;0.5;0.2;0.3;0.2;0.4;0.3;0.2;0.2
+E8 Статистика;0.3;0.5;0.2;0.3;0.2;0.4;0.3;0.2;0.2
+F1 Прикладна математика;0.3;0.5;0.2;0.3;0.2;0.4;0.3;0.2;0.2
+F2 Інженерія програмного забезпечення;0.3;0.5;0.2;0.3;0.2;0.4;0.3;0.2;0.2
+F3 Комп’ютерні науки;0.3;0.5;0.2;0.3;0.2;0.4;0.3;0.2;0.2
+F4 Системний аналіз;0.3;0.5;0.2;0.3;0.2;0.4;0.3;0.2;0.2
+F5 Кібербезпека та захист інформації;0.3;0.5;0.2;0.3;0.2;0.4;0.3;0.2;0.2
+F6 Інформаційні системи і технології;0.3;0.5;0.2;0.3;0.2;0.4;0.3;0.2;0.2
+F7 Комп’ютерна інженерія;0.3;0.5;0.2;0.3;0.2;0.4;0.3;0.2;0.2
+G1 Хімічні технології та інженерія;0.3;0.5;0.2;0.3;0.3;0.3;0.5;0.2;0.2
+G2 Технології захисту навколишнього середовища;0.3;0.5;0.2;0.3;0.5;0.5;0.5;0.2;0.2
+G3 Електрична інженерія;0.3;0.5;0.2;0.3;0.2;0.5;0.3;0.2;0.2
+G4 Енерговиробництво (Атомна енергетика);0.3;0.5;0.2;0.3;0.2;0.5;0.5;0.2;0.2
+G4 Енерговиробництво (інші спеціалізації);0.3;0.5;0.2;0.3;0.2;0.5;0.3;0.2;0.2
+G5 Електроніка, електронні комунікації та радіотехніка;0.3;0.5;0.2;0.3;0.2;0.5;0.3;0.2;0.2
+G6 Інформаційно-вимірювальні технології;0.3;0.5;0.2;0.3;0.2;0.5;0.3;0.2;0.2
+G7 Автоматизація, комп’ютерно-інтегровані технології та робототехніка;0.3;0.5;0.2;0.3;0.2;0.5;0.3;0.2;0.2
+G8 Матеріалознавство;0.3;0.5;0.2;0.3;0.2;0.5;0.5;0.2;0.2
+G9 Прикладна механіка;0.3;0.5;0.2;0.3;0.2;0.5;0.3;0.2;0.2
+G10 Металургія;0.3;0.5;0.2;0.3;0.2;0.5;0.5;0.2;0.2
+G11 Машинобудування;0.3;0.5;0.2;0.3;0.2;0.5;0.3;0.2;0.2
+G12 Авіаційна та ракетно-космічна техніка;0.3;0.5;0.2;0.3;0.2;0.5;0.3;0.2;0.2
+G13 Харчові технології;0.3;0.5;0.2;0.3;0.4;0.4;0.4;0.2;0.2
+G14 Деревообробні та меблеві технології;0.3;0.5;0.2;0.3;0.5;0.5;0.5;0.2;0.2
+G15 Технології легкої промисловості;0.3;0.5;0.2;0.3;0.2;0.5;0.5;0.2;0.2
+G16 Гірництво та нафтогазові;0.3;0.5;0.2;0.3;0.5;0.5;0.5;0.2;0.3
+G17 Архітектура та містобудування;0.1;0.1;0.1;0.1;0.1;0.1;0.1;0.1;0.1;0.7
+G18 Геодезія та землеустрій;0.3;0.5;0.2;0.3;0.2;0.4;0.3;0.2;0.3
+G19 Будівництво та цивільна інженерія;0.3;0.5;0.2;0.3;0.2;0.5;0.3;0.2;0.2
+G20 Видавництво та поліграфія;0.3;0.5;0.2;0.3;0.2;0.5;0.5;0.2;0.2
+G21 Біотехнології та біоінженерія;0.35;0.35;0.3;0.3;0.5;0.5;0.5;0.25;0.3
+G22 Біомедична інженерія;0.35;0.35;0.3;0.3;0.5;0.5;0.5;0.25;0.3
+H1 Агрономія;0.4;0.3;0.3;0.4;0.5;0.5;0.5;0.3;0.3
+H2 Тваринництво;0.4;0.3;0.3;0.4;0.5;0.5;0.5;0.3;0.3
+H3 Садово-паркове господарство;0.4;0.3;0.3;0.4;0.5;0.5;0.5;0.3;0.3
+H4 Лісове господарство;0.4;0.3;0.3;0.4;0.5;0.5;0.5;0.3;0.3
+H5 Водні біоресурси та аквакультура;0.4;0.3;0.3;0.4;0.5;0.5;0.5;0.3;0.3
+H6 Ветеринарна медицина;0.35;0.4;0.25;0.4;0.5;0.4;0.4;0.25;0.25
+H7 Агроінженерія;0.4;0.3;0.3;0.4;0.5;0.5;0.5;0.3;0.3
+I1 Стоматологія;0.35;0.4;0.25;0.4;0.5;0.5;0.5;0.25;0.25
+I2 Медицина;0.35;0.4;0.25;0.4;0.5;0.5;0.5;0.25;0.25
+I3 Педіатрія;0.35;0.4;0.25;0.4;0.5;0.5;0.5;0.25;0.25
+I4 Медична психологія;0.35;0.4;0.25;0.4;0.5;0.5;0.5;0.25;0.25
+I5 Медсестринство;0.35;0.4;0.25;0.35;0.5;0.4;0.4;0.25;0.25
+I6 Технології медичної діагностики та лікування;0.35;0.4;0.25;0.35;0.5;0.4;0.4;0.25;0.25
+I7 Терапія та реабілітація;0.35;0.4;0.25;0.35;0.5;0.4;0.4;0.25;0.25
+I8 Фармація;0.35;0.4;0.25;0.4;0.5;0.5;0.5;0.25;0.25
+I9 Громадське здоров’я;0.35;0.4;0.25;0.35;0.5;0.4;0.4;0.25;0.25
+I10 Соціальна робота та консультування;0.35;0.4;0.25;0.35;0.5;0.4;0.4;0.25;0.25
+I11 Дитячі та молодіжні служби;0.35;0.4;0.25;0.35;0.5;0.4;0.4;0.25;0.25
+J2 Готельно-ресторанна справа;0.35;0.4;0.25;0.25;0.2;0.3;0.3;0.25;0.35
+J3 Туризм і рекреація;0.35;0.4;0.25;0.25;0.2;0.3;0.3;0.25;0.35
+J4 Охорона праці;0.35;0.4;0.25;0.25;0.35;0.4;0.4;0.25;0.25
+J5 Морський та внутрішній водний транспорт;0.3;0.5;0.2;0.5;0.2;0.4;0.3;0.2;0.2
+J6 Авіаційний транспорт;0.3;0.5;0.2;0.5;0.2;0.4;0.3;0.2;0.2
+J7 Залізничний транспорт;0.3;0.5;0.2;0.5;0.2;0.4;0.3;0.2;0.2
+J8 Автомобільний транспорт;0.3;0.5;0.2;0.5;0.2;0.4;0.3;0.2;0.2
+K3 Національна безпека;0.3;0.5;0.2;0.25;0.2;0.5;0.3;0.2;0.2
+K4 Управління інформаційною безпекою;0.3;0.5;0.2;0.3;0.2;0.5;0.3;0.2;0.2
+K8 Пожежна безпека;0.35;0.4;0.25;0.25;0.35;0.4;0.4;0.25;0.25
+K9 Правоохоронна діяльність;0.35;0.3;0.35;0.35;0.3;0.35;0.35;0.25;0.35
+K10 Цивільна безпека;0.35;0.4;0.25;0.25;0.35;0.4;0.4;0.25;0.25
+`;
+
+    const gkCodes = ["A2", "A3", "A4.04", "A4.05", "A4.06", "A4.07", "A4.08", "A4.09", "A4.10", "A4.15", "A4.16", "A5", "A6.0x", "E3", "E4", "E5", "E6", "E7", "E8", "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9", "G10", "G11", "G12", "G13", "G14", "G15", "G16", "G19", "H1", "H2", "H3", "H4", "H5", "H7", "J4", "J6", "J7", "J8", "K8", "K10"];
+
+    const specialtyData = {};
+    const lines = rawData.trim().split('\n');
+    lines.forEach(line => {
+        const parts = line.split(';');
+        if (parts.length > 1) {
+            specialtyData[parts[0].trim()] = parts.slice(1).map(Number);
+        }
+    });
+
+    const specialtyInput = document.getElementById('specialtyInput');
+    const specialtyDropdown = document.getElementById('specialtyDropdown');
+    const clearBtn = document.getElementById('clearBtn');
+    let specialtyList = Object.keys(specialtyData);
+    
+    function toggleDropdown(show) {
+        if (show) { specialtyDropdown.style.display = 'block'; } 
+        else { specialtyDropdown.style.display = 'none'; }
+    }
+
+    function filterDropdown(query) {
+        specialtyDropdown.innerHTML = '';
+        const lowerQuery = query.toLowerCase();
+        const filtered = query === '' ? specialtyList : specialtyList.filter(name => name.toLowerCase().includes(lowerQuery));
+
+        if (filtered.length === 0) {
+            specialtyDropdown.innerHTML = '<div class="dropdown-item" style="cursor:default; color:#888;">Нічого не знайдено</div>';
+            return;
+        }
+
+        filtered.forEach(name => {
+            const div = document.createElement('div');
+            div.className = 'dropdown-item';
+            if (query !== '' && name.toLowerCase().indexOf(lowerQuery) !== -1) {
+                const startIndex = name.toLowerCase().indexOf(lowerQuery);
+                div.innerHTML = `${name.substring(0, startIndex)}<strong>${name.substring(startIndex, startIndex + query.length)}</strong>${name.substring(startIndex + query.length)}`;
+            } else { div.textContent = name; }
+            div.onclick = (e) => { e.stopPropagation(); selectSpecialty(name); };
+            specialtyDropdown.appendChild(div);
+        });
+    }
+
+    function selectSpecialty(name) {
+        specialtyInput.value = name;
+        toggleDropdown(false);
+        updateClearBtn();
+        handleSpecialtyChange(); 
+    }
+
+    function updateClearBtn() {
+        if (specialtyInput.value.length > 0) { clearBtn.style.display = 'block'; } 
+        else { clearBtn.style.display = 'none'; }
+    }
+
+    specialtyInput.addEventListener('click', function(e) { e.stopPropagation(); this.select(); filterDropdown(''); toggleDropdown(true); });
+    specialtyInput.addEventListener('input', (e) => { filterDropdown(e.target.value); toggleDropdown(true); updateClearBtn(); });
+    clearBtn.addEventListener('click', (e) => { e.stopPropagation(); specialtyInput.value = ''; updateClearBtn(); specialtyInput.focus(); filterDropdown(''); toggleDropdown(true); });
+    document.addEventListener('click', (e) => { if (!e.target.closest('.search-wrapper')) { toggleDropdown(false); } });
+
+    function checkGK(specialtyName) { return gkCodes.some(code => specialtyName.startsWith(code)); }
+    
+    function handleYearChange() {
+        const year = document.getElementById('yearSelect').value;
+        const p4Block = document.getElementById('p4-block');
+        const ouBlock = document.getElementById('ou-block');
+        
+        const labelP3 = document.getElementById('label_p3');
+        const p3Select = document.getElementById('p3Select');
+        const labelP3Score = document.getElementById('label_p3_score');
+
+        if (year === '2023') {
+
+            p4Block.classList.add('nmt-hidden');
+            ouBlock.classList.add('nmt-hidden');
+            
+            p3Select.classList.remove('nmt-hidden');
+            labelP3Score.classList.remove('nmt-hidden');
+            
+            labelP3.innerText = "Третій предмет (П3):";
+        } else {
+
+            if (year === '2024') {
+                p4Block.classList.remove('nmt-hidden');
+                ouBlock.classList.add('nmt-hidden');
+            } else {
+                p4Block.classList.remove('nmt-hidden');
+                ouBlock.classList.remove('nmt-hidden');
+            }
+            
+            p3Select.classList.add('nmt-hidden');
+            labelP3Score.classList.add('nmt-hidden');
+            
+            labelP3.innerText = "Історія України (П3):";
+        }
+        handleInputModeChange();
+    }
+
+    function handleSpecialtyChange() {
+        const specialtyName = specialtyInput.value;
+        const creativeBlock = document.getElementById('creativeBlock');
+        const gkBlock = document.getElementById('gkBlock');
+        
+        if (specialtyData[specialtyName]) {
+            const coeffs = specialtyData[specialtyName];
+            if (coeffs.length === 10) { creativeBlock.classList.remove('nmt-hidden'); } 
+            else { creativeBlock.classList.add('nmt-hidden'); document.getElementById('tk').value = ''; }
+            if (checkGK(specialtyName)) { gkBlock.classList.remove('nmt-hidden'); } 
+            else { gkBlock.classList.add('nmt-hidden'); document.querySelector('input[name="gk"][value="1.00"]').checked = true; }
+        }
+    }
+
+    function handleInputModeChange() {
+        const mode = document.querySelector('input[name="inputMode"]:checked').value;
+        const isTest = (mode === 'test');
+        const year = document.getElementById('yearSelect').value;
+        
+        let rangeP1, rangeP2, rangeP3;
+
+        if (year === '2023') {
+
+            rangeP1 = "5-45";
+            rangeP2 = "4-32";
+            
+            const subjP3 = document.getElementById('p3Select').value;
+            if (subjP3 === 'hist') rangeP3 = "6-54";
+            else if (subjP3 == '0') rangeP3 = "4-32";
+            else if (subjP3 == '1') rangeP3 = "5-46";
+            else if (subjP3 == '2') rangeP3 = "4-32";
+            else if (subjP3 == '3') rangeP3 = "4-40";
+        } else if (year === '2024' || year === '2025') {
+
+            rangeP1 = "7-45";
+            rangeP2 = "5-32";
+            rangeP3 = "8-54";
+        } else {
+
+            rangeP1 = "8-45";
+            rangeP2 = "5-32";
+            rangeP3 = "9-54";
+        }
+
+        setFieldState('p1', 'hint_p1', isTest, rangeP1, "100-200");
+        setFieldState('p2', 'hint_p2', isTest, rangeP2, "100-200");
+        setFieldState('p3', 'hint_p3', isTest, rangeP3, "100-200");
+        
+        const subjIndex = document.getElementById('subjectSelect').value;
+        let rangeP4 = "100-200";
+        if (isTest) {
+
+            if (subjIndex == 0) rangeP4 = "5-32";
+            else if (subjIndex == 1) rangeP4 = "7-46";
+            else if (subjIndex == 2) rangeP4 = "5-32";
+            else if (subjIndex == 3) rangeP4 = "5-32";
+            else if (subjIndex == 4) rangeP4 = "7-45";
+            else if (subjIndex == 5) rangeP4 = "7-46";
+        }
+        setFieldState('p4', 'hint_p4', isTest, rangeP4, "100-200");
+    }
+
+    function setFieldState(inputId, hintId, isTest, testRange, ratingRange) {
+        const input = document.getElementById(inputId);
+        const hint = document.getElementById(hintId);
+        if(!input) return;
+        if (isTest) { input.placeholder = testRange; if(hint) hint.innerText = ``; } 
+        else { input.placeholder = ratingRange; if(hint) hint.innerText = ``; }
+    }
+    
+    function calculateNMT() {
+        const specialtyName = document.getElementById('specialtyInput').value;
+        const year = document.getElementById('yearSelect').value;
+        
+        if (!specialtyData[specialtyName]) { alert("Будь ласка, оберіть спеціальність зі списку."); return; }
+        const coeffs = specialtyData[specialtyName];
+        
+        const mode = document.querySelector('input[name="inputMode"]:checked').value;
+        const isTest = (mode === 'test');
+
+        let rawP1 = parseFloat(document.getElementById('p1').value);
+        let rawP2 = parseFloat(document.getElementById('p2').value);
+        let rawP3 = parseFloat(document.getElementById('p3').value);
+        let rawP4 = parseFloat(document.getElementById('p4').value) || 0;
+        
+        let p1, p2, p3, p4;
+        
+        const p3Type = (year === '2023') ? document.getElementById('p3Select').value : 'hist';
+
+        if (isTest) {
+            if (year === '2023') {
+
+                if (rawP1 > 45) { alert("Українська мова: максимум 45 балів."); return; }
+                p1 = getRating(rawP1, tUkr23, 5, 45);
+
+                if (rawP2 > 32) { alert("Математика: максимум 32 бали."); return; }
+                p2 = getRating(rawP2, tMath23, 4, 32);
+
+                if (p3Type === 'hist') {
+                    if (rawP3 > 54) { alert("Історія України: максимум 54 бали."); return; }
+                    p3 = getRating(rawP3, tHist23, 6, 54);
+                } else if (p3Type == '0') {
+                    if (rawP3 > 32) { alert("Іноземна мова: максимум 32 бали."); return; }
+                    p3 = getRating(rawP3, tEng23, 4, 32);
+                } else if (p3Type == '1') {
+                    if (rawP3 > 46) { alert("Біологія: максимум 46 балів."); return; }
+                    p3 = getRating(rawP3, tBio23, 5, 46);
+                } else if (p3Type == '2') {
+                    if (rawP3 > 32) { alert("Фізика: максимум 32 бали."); return; }
+                    p3 = getRating(rawP3, tPhy23, 4, 32);
+                } else if (p3Type == '3') {
+                    if (rawP3 > 40) { alert("Хімія: максимум 40 балів."); return; }
+                    p3 = getRating(rawP3, tChem23, 4, 40);
+                }
+
+            } else if (year === '2024' || year === '2025') {
+
+                if (rawP1 > 45) { alert("Українська мова: максимум 45 балів."); return; }
+                p1 = getRating(rawP1, tUkr24, 7, 45);
+
+                if (rawP2 > 32) { alert("Математика: максимум 32 бали."); return; }
+                p2 = getRating(rawP2, tMath, 5, 32);
+
+                if (rawP3 > 54) { alert("Історія України: максимум 54 бали."); return; }
+                p3 = getRating(rawP3, tHist24, 8, 54);
+
+                const subj = document.getElementById('subjectSelect').value;
+                if (subj == 0) { if (rawP4 > 32) { alert("Іноземна мова: максимум 32 бали."); return; } p4 = getRating(rawP4, tEng, 5, 32); }
+                else if (subj == 1) { if (rawP4 > 46) { alert("Біологія: максимум 46 балів."); return; } p4 = getRating(rawP4, tBio, 7, 46); }
+                else if (subj == 2) { if (rawP4 > 32) { alert("Фізика: максимум 32 бали."); return; } p4 = getRating(rawP4, tPhy, 5, 32); }
+                else if (subj == 3) { if (rawP4 > 32) { alert("Хімія: максимум 32 бали."); return; } p4 = getRating(rawP4, tChem, 5, 32); }
+                else if (subj == 4) { if (rawP4 > 45) { alert("Українська література: максимум 45 балів."); return; } p4 = getRating(rawP4, tLit, 7, 45); }
+                else if (subj == 5) { if (rawP4 > 46) { alert("Географія: максимум 46 балів."); return; } p4 = getRating(rawP4, tGeo, 7, 46); }
+
+            } else {
+
+                if (rawP1 > 45) { alert("Українська мова: максимум 45 балів."); return; }
+                p1 = getRating(rawP1, tUkr, 8, 45);
+
+                if (rawP2 > 32) { alert("Математика: максимум 32 бали."); return; }
+                p2 = getRating(rawP2, tMath, 5, 32);
+
+                if (rawP3 > 54) { alert("Історія України: максимум 54 бали."); return; }
+                p3 = getRating(rawP3, tHist, 9, 54);
+
+                const subj = document.getElementById('subjectSelect').value;
+                if (subj == 0) { if (rawP4 > 32) { alert("Іноземна мова: максимум 32 бали."); return; } p4 = getRating(rawP4, tEng, 5, 32); }
+                else if (subj == 1) { if (rawP4 > 46) { alert("Біологія: максимум 46 балів."); return; } p4 = getRating(rawP4, tBio, 7, 46); }
+                else if (subj == 2) { if (rawP4 > 32) { alert("Фізика: максимум 32 бали."); return; } p4 = getRating(rawP4, tPhy, 5, 32); }
+                else if (subj == 3) { if (rawP4 > 32) { alert("Хімія: максимум 32 бали."); return; } p4 = getRating(rawP4, tChem, 5, 32); }
+                else if (subj == 4) { if (rawP4 > 45) { alert("Українська література: максимум 45 балів."); return; } p4 = getRating(rawP4, tLit, 7, 45); }
+                else if (subj == 5) { if (rawP4 > 46) { alert("Географія: максимум 46 балів."); return; } p4 = getRating(rawP4, tGeo, 7, 46); }
+            }
+
+            if (p1 === 0 || p2 === 0 || p3 === 0) { alert("Один з основних предметів не складено (нижче порогу)."); return; }
+            if (year !== '2023' && p4 === 0) { alert("Четвертий предмет не складено (нижче порогу)."); return; }
+
+        } else {
+
+            if ([rawP1, rawP2, rawP3].some(v => isNaN(v) || v < 100 || v > 200)) { alert("Введіть коректні рейтингові бали (100-200) для основних предметів."); return; }
+            if (year !== '2023' && (isNaN(rawP4) || rawP4 < 100 || rawP4 > 200)) { alert("Введіть коректний рейтинговий бал (100-200) для 4-го предмету."); return; }
+            p1 = rawP1; p2 = rawP2; p3 = rawP3; p4 = rawP4;
+        }
+        
+        const ou = parseFloat(document.getElementById('ou').value) || 0;
+        
+        const hasCreative = coeffs.length === 10;
+        let tk = 0;
+        if (hasCreative) {
+            tk = parseFloat(document.getElementById('tk').value);
+            if (isNaN(tk) || tk < 100 || tk > 200) { alert("Введіть бал за творчий конкурс (100-200)."); return; }
+        }
+        
+        const k1 = coeffs[0];
+        const k2 = coeffs[1];
+        
+        let k3; 
+        if (year === '2023') {
+            if (p3Type === 'hist') k3 = coeffs[2];
+            else k3 = coeffs[3 + parseInt(p3Type)];
+        } else {
+            k3 = coeffs[2];
+        }
+
+        const subjectIndex = parseInt(document.getElementById('subjectSelect').value); 
+        const k4 = coeffs[3 + subjectIndex];
+        const electiveCoeffs = coeffs.slice(3, 9);
+        const k4Max = Math.max(...electiveCoeffs);
+        
+        let numerator = 0;
+        let denominator = 0;
+        let kb = 0;
+
+        if (year === '2025' || year === '2026') {
+            numerator = (k1 * p1) + (k2 * p2) + (k3 * p3) + (k4 * p4);
+            denominator = k1 + k2 + k3 + ((k4 + k4Max) / 2);
+            if (hasCreative) { const kt = coeffs[9]; numerator += (kt * tk); denominator += kt; }
+            kb = (numerator / denominator) + ou;
+        } else if (year === '2024') {
+            numerator = (k1 * p1) + (k2 * p2) + (k3 * p3) + (k4 * p4);
+            denominator = k1 + k2 + k3 + k4;
+            if (hasCreative) { const kt = coeffs[9]; numerator += (kt * tk); denominator += kt; }
+            kb = numerator / denominator;
+        } else if (year === '2023') {
+            numerator = (k1 * p1) + (k2 * p2) + (k3 * p3);
+            denominator = k1 + k2 + k3;
+            if (hasCreative) { const kt = coeffs[9]; numerator += (kt * tk); denominator += kt; }
+            kb = numerator / denominator;
+        }
+        
+        const rk = parseFloat(document.getElementById('regionSelect').value);
+        kb *= rk;
+        const gk = parseFloat(document.querySelector('input[name="gk"]:checked').value);
+        kb *= gk;
+        
+        if (kb < 100) kb = 100; 
+        if (kb > 200) kb = 200; 
+        
+        const resultDiv = document.getElementById('nmt-result');
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `Ваш конкурсний бал: <span>${kb.toFixed(3)}</span>`;
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => { handleYearChange(); });
+</script>
+
+</body>
+</html>
