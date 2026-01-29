@@ -1,0 +1,869 @@
+<style>
+    .nmt-wrapper {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px 0;
+        background-color: transparent;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+    }
+    .nmt-card {
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        width: 100%;
+        max-width: 550px;
+        box-sizing: border-box;
+        border: 1px solid #e0e0e0;
+    }
+    .nmt-card h2 {
+        text-align: center;
+        color: #333;
+        margin: 0 0 20px 0;
+        font-size: 22px;
+        line-height: 1.3;
+    }
+
+    .tabs-container {
+        display: flex;
+        background: #f3f4f6;
+        border-radius: 8px;
+        padding: 4px;
+        margin-bottom: 15px;
+    }
+    .tab-btn {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        background: transparent;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        color: #666;
+        transition: all 0.2s;
+        font-size: 15px;
+    }
+    .tab-btn.active {
+        background: #fff;
+        color: #4f46e5;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .input-mode-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+    }
+    .mode-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        color: #444;
+    }
+    .mode-label input { width: auto !important; margin: 0; }
+
+    .nmt-form-group {
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        position: relative;
+    }
+    .nmt-card label {
+        margin-bottom: 5px;
+        font-weight: 600;
+        color: #555;
+        font-size: 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .nmt-card input[type="text"],
+    .nmt-card input[type="number"],
+    .nmt-card select {
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+        outline: none;
+        width: 100%;
+        box-sizing: border-box;
+        background-color: #fff;
+        color: #333;
+    }
+    .nmt-card input:focus, .nmt-card select:focus {
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .search-wrapper { position: relative; }
+    .search-input-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    .clear-btn {
+        position: absolute;
+        right: 12px;
+        cursor: pointer;
+        font-size: 18px;
+        color: #999;
+        display: none;
+        user-select: none;
+        z-index: 10;
+    }
+    .clear-btn:hover { color: #333; }
+    .custom-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 0 0 8px 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        max-height: 250px;
+        overflow-y: auto;
+        z-index: 1000;
+        display: none;
+        margin-top: 5px;
+    }
+    .dropdown-item {
+        padding: 10px 12px;
+        cursor: pointer;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 14px;
+        color: #333;
+        transition: background 0.2s;
+    }
+    .dropdown-item:hover { background-color: #f3f4f6; }
+    .dropdown-item strong { color: #4f46e5; }
+
+    .nmt-hidden { display: none !important; }
+
+    .checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        font-weight: normal;
+        color: #4f46e5;
+        cursor: pointer;
+        margin-left: auto;
+    }
+    .checkbox-wrapper input { width: auto !important; margin: 0; }
+    
+    .edki-toggle-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 5px;
+        background: #f9fafb;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #eee;
+    }
+    .radio-label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-weight: normal;
+        cursor: pointer;
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .nmt-btn {
+        width: 100%;
+        padding: 12px;
+        background-color: #4f46e5;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 20px;
+        transition: background 0.3s;
+        line-height: normal;
+        box-sizing: border-box;
+    }
+    .nmt-btn:hover { background-color: #4338ca; }
+    
+    .result-container {
+        margin-top: 25px;
+        display: none;
+    }
+    .nmt-result-box {
+        padding: 20px;
+        background-color: #eef2ff;
+        border-radius: 10px;
+        text-align: center;
+        color: #312e81;
+        font-size: 18px;
+        border: 1px solid #c7d2fe;
+    }
+    .nmt-result-box span {
+        display: block;
+        font-size: 32px;
+        font-weight: bold;
+        margin-top: 10px;
+        color: #4f46e5;
+    }
+    
+    .warning-box {
+        margin-top: 15px;
+        padding: 15px;
+        background-color: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 8px;
+        color: #991b1b;
+        font-size: 14px;
+        text-align: center;
+        line-height: 1.4;
+        display: none;
+    }
+    .warning-box strong {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 15px;
+    }
+    .hint-text {
+        font-size: 12px;
+        color: #888;
+        margin-top: 4px;
+    }
+
+    @media (max-width: 600px) {
+        .nmt-card {
+            padding: 20px;
+            width: 90% !important;
+            margin: 0 auto;
+        }
+        .input-mode-container {
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+    }
+</style>
+
+<div class="nmt-wrapper">
+    <div class="nmt-card">
+        <h2>Розрахунок конкурсного балу</h2>
+        
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="switchTab('master')">Магістратура</button>
+            <button class="tab-btn" onclick="switchTab('phd')">Аспірантура</button>
+        </div>
+
+        <div class="input-mode-container">
+            <label class="mode-label">
+                <input type="radio" name="inputMode" value="test" checked onchange="handleInputModeChange()"> Тестові бали
+            </label>
+            <label class="mode-label">
+                <input type="radio" name="inputMode" value="rating" onchange="handleInputModeChange()"> Рейтингові (100-200)
+            </label>
+        </div>
+
+        <div id="form-master">
+            <div class="nmt-form-group search-wrapper">
+                <label for="specialtyInput">Оберіть спеціальність:</label>
+                <div class="search-input-container">
+                    <input type="text" id="specialtyInput" placeholder="Введіть код або назву..." autocomplete="off">
+                    <span class="clear-btn" id="clearBtn" title="Очистити">✕</span>
+                </div>
+                <div class="custom-dropdown" id="specialtyDropdown"></div>
+            </div>
+
+            <div class="nmt-form-group nmt-hidden" id="edkiToggleContainer">
+                <label>Тип випробування:</label>
+                <div class="edki-toggle-group">
+                    <label class="radio-label">
+                        <input type="radio" name="examType" value="efvv" checked onchange="handleExamTypeChange()"> ЄФВВ
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="examType" value="edki" onchange="handleExamTypeChange()"> ЄДКІ
+                    </label>
+                </div>
+            </div>
+
+            <div class="nmt-form-group">
+                <label>
+                    Іноземна мова:
+                    <span class="checkbox-wrapper">
+                        <input type="checkbox" id="m_interview" onchange="toggleMasterInterview()"> Співбесіда?
+                    </span>
+                </label>
+                <input type="number" id="m_p2" placeholder="5-30" min="0" max="200">
+                <div id="m_interview_hint" style="color: #d97706; margin-top: 4px; display:none;" class="hint-text">
+                </div>
+                <div class="hint-text" id="hint_m_p2"></div>
+            </div>
+
+            <div class="nmt-form-group" id="master_tznk_container">
+                <label>ТЗНК:</label>
+                <input type="number" id="m_p1" placeholder="5-33" min="0" max="200">
+                <div class="hint-text" id="hint_m_p1"></div>
+            </div>
+
+            <div class="nmt-form-group" id="blockP3">
+                <label id="labelP3">ЄФВВ:</label>
+                <input type="number" id="m_p3" placeholder="35-140" min="0" max="400">
+                <div class="hint-text" id="p3-hint"></div>
+            </div>
+
+            <div class="nmt-form-group nmt-hidden" id="blockP4">
+                <label>Фаховий іспит:</label>
+                <input type="number" id="m_p4" placeholder="100-200" min="0" max="200">
+                <div class="hint-text">Внутрішній іспит (завжди 100-200)</div>
+            </div>
+        </div>
+
+        <div id="form-phd" class="nmt-hidden">
+            
+            <div class="nmt-form-group">
+                <label>
+                    Іноземна мова:
+                    <span class="checkbox-wrapper">
+                        <input type="checkbox" id="phd_interview" onchange="togglePhdInterview()"> Співбесіда?
+                    </span>
+                </label>
+                <input type="number" id="a_p1" placeholder="5-30" min="0" max="200">
+                <div id="a_interview_hint" style="color: #d97706; margin-top: 4px; display:none;" class="hint-text">
+                    Мін. бал для співбесіди: 150
+                </div>
+                <div class="hint-text" id="hint_a_p1"></div>
+            </div>
+
+            <div class="nmt-form-group" id="phd_tznk_container">
+                <label>ТЗНК:</label>
+                <input type="number" id="a_p_tznk" placeholder="5-33" min="0" max="200">
+            </div>
+
+            <div class="nmt-form-group">
+                <label>ЄВВ:</label>
+                <input type="number" id="a_p2" placeholder="25-100" min="0" max="200">
+                <div class="hint-text" id="hint_a_p2"></div>
+            </div>
+
+            <div class="nmt-form-group">
+                <label>
+                    Вступний іспит зі спеціальності:
+                    <span class="checkbox-wrapper">
+                        <input type="checkbox" id="phd_extra_exam" onchange="togglePhdExtra()"> Додаткове випробування?
+                    </span>
+                </label>
+                <input type="number" id="a_p3" placeholder="100-200" min="0" max="200">
+                <div class="hint-text">Внутрішній іспит (завжди 100-200)</div>
+            </div>
+
+            <div class="nmt-form-group nmt-hidden" id="phd_p4_block">
+                <label>Додаткове вступне випробування:</label>
+                <input type="number" id="a_p4" placeholder="100-200" min="0" max="200">
+                <div class="hint-text">
+                </div>
+            </div>
+        </div>
+        
+        <button class="nmt-btn" onclick="calculate()">Розрахувати</button>
+        
+        <div class="result-container" id="resultBlock">
+            <div class="nmt-result-box" id="nmt-result"></div>
+            
+            <div class="warning-box" id="warningBlock">
+                <strong>Увага!</strong>
+                Сума балів за ТЗНК та іноземну мову менша за 300 (рейтингова шкала).<br>
+                Відповідно до Порядку прийому, участь у конкурсному відборі є неможливою.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const tableTznk = { 5:100, 6:104, 7:108, 8:112, 9:116, 10:120, 11:125, 12:130, 13:135, 14:139, 15:143, 16:147, 17:151, 18:153, 19:156, 20:159, 21:162, 22:165, 23:168, 24:171, 25:175, 26:179, 27:182, 28:185, 29:187, 30:190, 31:193, 32:196, 33:200 };
+    const tableLang = { 5:100, 6:108, 7:116, 8:124, 9:130, 10:134, 11:137, 12:140, 13:143, 14:146, 15:148, 16:150, 17:152, 18:154, 19:157, 20:160, 21:162, 22:164, 23:167, 24:170, 25:174, 26:177, 27:182, 28:188, 29:194, 30:200 };
+    
+    const tableEfvv = {};
+    const efvvData = [
+        [35,100],[36,101],[37,102],[38,103],[39,104],[40,105],[41,106],[42,107],[43,108],[44,109],[45,110],[46,111],[47,112],[48,113.5],[49,115],[50,116.5],[51,118],[52,119.5],[53,121],[54,122.5],[55,124],[56,125.5],[57,127],[58,128.5],[59,130],[60,131.5],[61,133],[62,134.5],[63,136],[64,137.5],[65,139],[66,140.5],[67,142],[68,143.5],[69,145],[70,146.5],[71,148],[72,149],[73,150],[74,151],[75,152],[76,153],[77,154],[78,155],[79,156],[80,157],[81,158],[82,159],[83,160],[84,161],[85,162],[86,163],[87,164],[88,165],[89,166],[90,167],[91,168],[92,169],[93,170],[94,171],[95,172],[96,173],[97,174],[98,175],[99,176],[100,177],[101,178],[102,179],[103,180],[104,181],[105,182],[106,183],[107,183.5],[108,184],[109,184.5],[110,185],[111,185.5],[112,186],[113,186.5],[114,187],[115,187.5],[116,188],[117,188.5],[118,189],[119,189.5],[120,190],[121,190.5],[122,191],[123,191.5],[124,192],[125,192.5],[126,193],[127,193.5],[128,194],[129,194.5],[130,195],[131,195.5],[132,196],[133,196.5],[134,197],[135,197.5],[136,198],[137,198.5],[138,199],[139,199.5],[140,200]
+    ];
+    efvvData.forEach(pair => tableEfvv[pair[0]] = pair[1]);
+
+    const tableMethodology = {};
+    const methodData = [
+        [25,100],[26,101],[27,102.5],[28,104],[29,105],[30,106.5],[31,108],[32,109],[33,110.5],[34,112],[35,113],[36,114.5],[37,116],[38,117],[39,118.5],[40,120],[41,121],[42,122.5],[43,124],[44,125],[45,126.5],[46,128],[47,129],[48,130.5],[49,132],[50,133],[51,134.5],[52,136],[53,137],[54,138.5],[55,140],[56,141],[57,142.5],[58,144],[59,145],[60,146.5],[61,148],[62,149],[63,150.5],[64,152],[65,153],[66,154.5],[67,156],[68,157],[69,158.5],[70,160],[71,161],[72,162.5],[73,164],[74,165],[75,166.5],[76,168],[77,169],[78,170.5],[79,172],[80,173],[81,174.5],[82,176],[83,177],[84,178.5],[85,180],[86,181],[87,182.5],[88,184],[89,185],[90,186.5],[91,188],[92,189],[93,190.5],[94,192],[95,193],[96,194.5],[97,196],[98,197],[99,198.5],[100,200]
+    ];
+    methodData.forEach(pair => tableMethodology[pair[0]] = pair[1]);
+
+    function getRatingScore(rawScore, table, minRaw, maxRaw) {
+        if (isNaN(rawScore) || rawScore < minRaw) return 0; 
+        if (rawScore > maxRaw) return 200; 
+        if (table[rawScore] !== undefined) return table[rawScore];
+        return 0;
+    }
+
+    const specialtiesList = [
+        "A1 Освітні, педагогічні науки", "A2 Дошкільна освіта", "A3 Початкова освіта", "A4 Середня освіта", "A5 Професійна освіта", "A6 Спеціальна освіта", "A7 Фізична культура і спорт",
+        "B1.01 Аудіовізуальне мистецтво та виробництво (Аудіовізуальне мистецтво)", "B1.02 Аудіовізуальне мистецтво та виробництво (Кіно-, медіавиробництво)", "B1.03 Аудіовізуальне мистецтво та виробництво (Звукорежисура)", "B1.04 Аудіовізуальне мистецтво та виробництво (Кіно-, медіазнавство)", "B2 Дизайн", "B3 Декоративне мистецтво та ремесла", "B4.01 Образотворче мистецтво та реставрація (Візуальні мистецтва)", "B4.02 Образотворче мистецтво та реставрація (Реставрація)", "B4.03 Образотворче мистецтво та реставрація (Мистецтвознавство)", "B5 Музичне мистецтво", "B6 Перформативні мистецтва", "B7 Релігієзнавство", "B8 Богослов’я", "B9 Історія та археологія", "B10 Філософія", "B11 Філологія", "B12 Культурологія та музеєзнавство", "B13 Бібліотечна, інформаційна та архівна справа",
+        "C1 Економіка та міжнародні економічні відносини", "C2 Політологія", "C3 Міжнародні відносини", "C4 Психологія", "C5 Соціологія", "C6 Географія та регіональні студії", "C7 Журналістика",
+        "D1 Облік і оподаткування", "D2 Фінанси, банківська справа, страхування та фондовий ринок", "D3 Менеджмент", "D4 Публічне управління та адміністрування", "D5 Маркетинг", "D7 Торгівля", "D8 Право", "D9 Міжнародне право",
+        "E1 Біологія та біохімія", "E2 Екологія", "E3 Хімія", "E4 Науки про Землю", "E5 Фізика та астрономія", "E6 Прикладна фізика та наноматеріали", "E7 Математика", "E8 Статистика",
+        "F1 Прикладна математика", "F2 Інженерія програмного забезпечення", "F3 Комп’ютерні науки", "F4 Системний аналіз", "F5 Кібербезпека та захист інформації", "F6 Інформаційні системи і технології", "F7 Комп’ютерна інженерія",
+        "G1 Хімічні технології та інженерія", "G2 Технології захисту навколишнього середовища", "G3 Електрична інженерія", "G4 Енерговиробництво (Атомна енергетика)", "G4 Енерговиробництво (інші спеціалізації)", "G5 Електроніка, електронні комунікації та радіотехніка", "G6 Інформаційно-вимірювальні технології", "G7 Автоматизація, комп’ютерно-інтегровані технології та робототехніка", "G8 Матеріалознавство", "G9 Прикладна механіка", "G10 Металургія", "G11 Машинобудування", "G12 Авіаційна та ракетно-космічна техніка", "G13 Харчові технології", "G14 Деревообробні та меблеві технології", "G15 Технології легкої промисловості", "G16 Гірництво та нафтогазові технології", "G17 Архітектура та містобудування", "G18 Геодезія та землеустрій", "G19 Будівництво та цивільна інженерія", "G20 Видавництво та поліграфія", "G21 Біотехнології та біоінженерія", "G22 Біомедична інженерія",
+        "H1 Агрономія", "H2 Тваринництво", "H3 Садово-паркове господарство", "H4 Лісове господарство", "H5 Водні біоресурси та аквакультура", "H6 Ветеринарна медицина", "H7 Агроінженерія",
+        "I1 Стоматологія", "I2 Медицина", "I3 Педіатрія", "I4 Медична психологія", "I5 Медсестринство", "I6 Технології медичної діагностики та лікування", "I7 Терапія та реабілітація", "I8 Фармація", "I9 Громадське здоров’я", "I10 Соціальна робота та консультування", "I11 Дитячі та молодіжні служби",
+        "J2 Готельно-ресторанна справа та кейтеринг", "J3 Туризм і рекреація", "J4 Охорона праці", "J5 Морський та внутрішній водний транспорт", "J6 Авіаційний транспорт", "J7 Залізничний транспорт", "J8 Автомобільний транспорт",
+        "K3 Національна безпека", "K8 Пожежна безпека", "K9 Правоохоронна діяльність", "K10 Цивільна безпека"
+    ];
+
+    let currentTab = 'master';
+
+    function switchTab(tab) {
+        currentTab = tab;
+        const formMaster = document.getElementById('form-master');
+        const formPhd = document.getElementById('form-phd');
+        const btns = document.querySelectorAll('.tab-btn');
+        const resultBlock = document.getElementById('resultBlock');
+
+        resultBlock.style.display = 'none';
+
+        if (tab === 'master') {
+            formMaster.classList.remove('nmt-hidden');
+            formPhd.classList.add('nmt-hidden');
+            btns[0].classList.add('active');
+            btns[1].classList.remove('active');
+        } else {
+            formMaster.classList.add('nmt-hidden');
+            formPhd.classList.remove('nmt-hidden');
+            btns[0].classList.remove('active');
+            btns[1].classList.add('active');
+        }
+        handleInputModeChange();
+    }
+
+    function handleInputModeChange() {
+        const mode = document.querySelector('input[name="inputMode"]:checked').value;
+        const isTest = (mode === 'test');
+        const specName = document.getElementById('specialtyInput').value;
+
+        setFieldState('m_p1', 'hint_m_p1', isTest, "5-33", "100-200");
+        
+        const mInterview = document.getElementById('m_interview').checked;
+        const mHintDiv = document.getElementById('m_interview_hint');
+        const mHintP2 = document.getElementById('hint_m_p2');
+        
+        if (mInterview) {
+            if (isTest) {
+                document.getElementById('m_p2').placeholder = "5-30";
+                mHintDiv.style.display = 'none'; 
+            } else {
+                document.getElementById('m_p2').placeholder = "100-200";
+                mHintDiv.style.display = 'block'; 
+                mHintP2.innerText = "";
+            }
+        } else {
+            mHintDiv.style.display = 'none';
+            setFieldState('m_p2', 'hint_m_p2', isTest, "5-30", "100-200");
+        }
+        
+        const edkiRadio = document.querySelector('input[name="examType"][value="edki"]');
+        const isEdkiSelected = edkiRadio && edkiRadio.checked && !document.getElementById('edkiToggleContainer').classList.contains('nmt-hidden');
+        const p3Hint = document.getElementById('p3-hint');
+        
+        if (isEdkiSelected) {
+            document.getElementById('m_p3').placeholder = "200-400";
+        } else {
+            const specName = document.getElementById('specialtyInput').value;
+
+            const config = specName ? getFormulaConfig(specName) : {type: 3};
+            
+            if (config.type === 3 || config.type === 1 || config.type === 2) { 
+                 setFieldState('m_p3', 'p3-hint', isTest, "35-140", "100-200");
+            } else {
+                 document.getElementById('m_p3').placeholder = "100-200";
+                 p3Hint.innerText = "Внутрішній іспит (завжди 100-200)";
+            }
+        }
+
+        setFieldState('a_p_tznk', 'hint_a_tznk', isTest, "5-33", "100-200");
+        
+        const aInterview = document.getElementById('phd_interview').checked;
+        const aHintDiv = document.getElementById('a_interview_hint');
+        const aHintP1 = document.getElementById('hint_a_p1');
+        
+        if (aInterview) {
+            aHintDiv.style.display = 'block';
+
+            if (isTest) {
+                document.getElementById('a_p1').placeholder = "5-30"; 
+                aHintDiv.innerText = "Мін. бал для співбесіди: 16 (Шкала 5-30)";
+                aHintP1.innerText = "";
+            } else {
+                document.getElementById('a_p1').placeholder = "100-200"; 
+                aHintDiv.innerText = "Мін. бал для співбесіди: 150 (Шкала 100-200)";
+                aHintP1.innerText = "";
+            }
+        } else {
+            aHintDiv.style.display = 'none';
+            setFieldState('a_p1', 'hint_a_p1', isTest, "5-30", "100-200");
+        }
+
+        setFieldState('a_p2', 'hint_a_p2', isTest, "25-100", "100-200");
+    }
+
+    function setFieldState(inputId, hintId, isTest, testRange, ratingRange) {
+        const input = document.getElementById(inputId);
+        const hint = document.getElementById(hintId);
+        if(!input) return;
+        
+        if (isTest) {
+            input.placeholder = testRange;
+            if(hint) hint.innerText = ``;
+        } else {
+            input.placeholder = ratingRange;
+            if(hint) hint.innerText = ``;
+        }
+    }
+
+    function togglePhdExtra() {
+        const checkbox = document.getElementById('phd_extra_exam');
+        const block = document.getElementById('phd_p4_block');
+        if (checkbox.checked) {
+            block.classList.remove('nmt-hidden');
+        } else {
+            block.classList.add('nmt-hidden');
+            document.getElementById('a_p4').value = '';
+        }
+    }
+
+    function togglePhdInterview() {
+        const checkbox = document.getElementById('phd_interview');
+        const tznkBlock = document.getElementById('phd_tznk_container');
+        
+        if (checkbox.checked) {
+            tznkBlock.style.display = 'none';
+        } else {
+            tznkBlock.style.display = 'flex';
+        }
+        handleInputModeChange();
+    }
+
+    function toggleMasterInterview() {
+        const checkbox = document.getElementById('m_interview');
+        const tznkBlock = document.getElementById('master_tznk_container');
+        
+        if (checkbox.checked) {
+            tznkBlock.style.display = 'none';
+        } else {
+            tznkBlock.style.display = 'flex';
+        }
+        handleInputModeChange(); 
+    }
+
+    const specialtyInput = document.getElementById('specialtyInput');
+    const specialtyDropdown = document.getElementById('specialtyDropdown');
+    const clearBtn = document.getElementById('clearBtn');
+    const labelP3 = document.getElementById('labelP3');
+    const hintP3 = document.getElementById('p3-hint');
+    const blockP4 = document.getElementById('blockP4');
+    const edkiToggle = document.getElementById('edkiToggleContainer');
+
+    function getFormulaConfig(spec) {
+        const creativeSpecs = ["A7", "B1.01", "B1.03", "B2", "B3", "B4.01", "B4.02", "B5", "B6", "G17"];
+        if (creativeSpecs.some(code => spec.startsWith(code))) return { type: 1, allowEdki: false };
+
+        const edkiSpecs = ["F5", "G4 Енерговиробництво (Атомна енергетика)", "J5", "J6", "J7", "J8"];
+        if (edkiSpecs.some(code => spec.startsWith(code))) return { type: 2, allowEdki: true };
+
+        const efvvPrefixes = ["A", "C", "D", "F", "K8", "K9", "K10"];
+        const efvvSpecific = ["B1.02", "B1.04", "B4.03", "B7", "B8", "B9", "B10", "B11", "B12", "B13", "E1", "E2", "G21", "G22", "H6", "I5", "I6", "I7", "I8", "I9", "I10", "I11", "J2", "J3", "J4"];
+        
+        let isEfvv = efvvPrefixes.some(prefix => spec.startsWith(prefix)) || efvvSpecific.some(code => spec.startsWith(code));
+        if (isEfvv) return { type: 3, allowEdki: false };
+
+        return { type: 4, allowEdki: false };
+    }
+
+    function handleExamTypeChange() {
+        const isEdki = document.querySelector('input[name="examType"]:checked').value === 'edki';
+        const p3Input = document.getElementById('m_p3');
+        
+        if (isEdki) {
+            labelP3.textContent = "ЄДКІ:";
+            p3Input.placeholder = "200-400";
+        } else {
+            labelP3.textContent = "ЄФВВ:";
+            handleInputModeChange();
+        }
+    }
+
+    function selectSpecialty(name) {
+        specialtyInput.value = name;
+        toggleDropdown(false);
+        updateClearBtn();
+        const config = getFormulaConfig(name);
+        
+        blockP4.classList.add('nmt-hidden');
+        edkiToggle.classList.add('nmt-hidden');
+        document.getElementById('m_p4').value = ''; 
+        
+        const efvvRadio = document.querySelector('input[name="examType"][value="efvv"]');
+        if(efvvRadio) efvvRadio.checked = true;
+
+        if (config.type === 1) { 
+            labelP3.textContent = "ЄФВВ:";
+            blockP4.classList.remove('nmt-hidden');
+        } else if (config.allowEdki) { 
+            edkiToggle.classList.remove('nmt-hidden');
+        } else if (config.type === 3) {
+            labelP3.textContent = "ЄФВВ:";
+        } else {
+            labelP3.textContent = "Фаховий іспит:";
+        }
+        handleInputModeChange();
+    }
+
+    function toggleDropdown(show) { specialtyDropdown.style.display = show ? 'block' : 'none'; }
+    function updateClearBtn() { clearBtn.style.display = specialtyInput.value.length > 0 ? 'block' : 'none'; }
+
+    function filterDropdown(query) {
+        specialtyDropdown.innerHTML = '';
+        const lowerQuery = query.toLowerCase();
+        const filtered = query === '' ? specialtiesList : specialtiesList.filter(name => name.toLowerCase().includes(lowerQuery));
+        if (filtered.length === 0) {
+            specialtyDropdown.innerHTML = '<div class="dropdown-item" style="cursor:default; color:#888;">Нічого не знайдено</div>';
+            return;
+        }
+        filtered.forEach(name => {
+            const div = document.createElement('div');
+            div.className = 'dropdown-item';
+            if (query !== '' && name.toLowerCase().indexOf(lowerQuery) !== -1) {
+                const startIndex = name.toLowerCase().indexOf(lowerQuery);
+                div.innerHTML = `${name.substring(0, startIndex)}<strong>${name.substring(startIndex, startIndex + query.length)}</strong>${name.substring(startIndex + query.length)}`;
+            } else { div.textContent = name; }
+            div.onclick = (e) => { e.stopPropagation(); selectSpecialty(name); };
+            specialtyDropdown.appendChild(div);
+        });
+    }
+
+    specialtyInput.addEventListener('click', function(e) { e.stopPropagation(); this.select(); filterDropdown(''); toggleDropdown(true); });
+    specialtyInput.addEventListener('input', (e) => { filterDropdown(e.target.value); toggleDropdown(true); updateClearBtn(); });
+    clearBtn.addEventListener('click', (e) => { e.stopPropagation(); specialtyInput.value = ''; updateClearBtn(); specialtyInput.focus(); filterDropdown(''); toggleDropdown(true); blockP4.classList.add('nmt-hidden'); edkiToggle.classList.add('nmt-hidden'); labelP3.textContent = "ЄФВВ:"; handleInputModeChange(); });
+    document.addEventListener('click', (e) => { if (!e.target.closest('.search-wrapper')) toggleDropdown(false); });
+
+    function calculate() {
+        const resultContainer = document.getElementById('resultBlock');
+        const resultDiv = document.getElementById('nmt-result');
+        const warningDiv = document.getElementById('warningBlock');
+        
+        resultContainer.style.display = 'none';
+        warningDiv.style.display = 'none';
+
+        const mode = document.querySelector('input[name="inputMode"]:checked').value;
+        const isTest = (mode === 'test');
+
+        let kb = 0;
+        let sumForWarning = 0;
+
+        if (currentTab === 'master') {
+            const specName = specialtyInput.value;
+            if (!specName) { alert("Оберіть спеціальність."); return; }
+            
+            const config = getFormulaConfig(specName);
+            
+            let rawP1 = parseFloat(document.getElementById('m_p1').value);
+            let rawP2 = parseFloat(document.getElementById('m_p2').value);
+            let rawP3 = parseFloat(document.getElementById('m_p3').value);
+            
+            const mInterview = document.getElementById('m_interview').checked;
+
+            if (isTest) {
+                if (rawP2 > 30) { alert("Іноземна мова: максимум 30 балів."); return; }
+                if (rawP2 < 5) { alert("Іноземна мова: мінімум 5 балів."); return; }
+            } else {
+                if (rawP2 > 200) { alert("Іноземна мова: максимум 200 балів."); return; }
+                if (rawP2 < 100) { alert("Іноземна мова: мінімум 100 балів."); return; }
+            }
+
+            if (!mInterview) {
+                if (isTest) {
+                    if (rawP1 > 33) { alert("ТЗНК: максимум 33 бали."); return; }
+                    if (rawP1 < 5) { alert("ТЗНК: мінімум 5 балів."); return; }
+                } else {
+                    if (rawP1 > 200) { alert("ТЗНК: максимум 200 балів."); return; }
+                    if (rawP1 < 100) { alert("ТЗНК: мінімум 100 балів."); return; }
+                }
+            }
+
+            let isEdkiMode = config.allowEdki && document.querySelector('input[name="examType"]:checked').value === 'edki';
+            let p3 = 0;
+
+            if (isEdkiMode) {
+
+                if (isNaN(rawP3) || rawP3 > 400) { alert("ЄДКІ: максимум 400 балів."); return; }
+                if (rawP3 < 200) { alert("ЄДКІ: мінімум 200 балів."); return; }
+                
+                p3 = (rawP3 * 0.625) - 25;
+                if (p3 > 200) p3 = 200;
+            } else {
+
+                const isEfvv = (config.type === 1 || config.type === 3 || (config.type === 2 && !isEdkiMode));
+                
+                if (isTest && isEfvv) {
+                    if (rawP3 > 140) { alert("ЄФВВ: максимум 140 балів."); return; }
+                    if (rawP3 < 35) { 
+
+                    }
+                    p3 = getRatingScore(rawP3, tableEfvv, 35, 140);
+                } else {
+                    if (rawP3 > 200) { alert("Фахове випробування: максимум 200 балів."); return; }
+                    if (rawP3 < 100) { alert("Фахове випробування: мінімум 100 балів."); return; }
+                    p3 = rawP3;
+                }
+                
+                if (isNaN(p3) || p3 < 100) { alert("Введіть коректний бал фахового випробування."); return; }
+            }
+
+            let p4 = 0;
+            if (config.type === 1) {
+                p4 = parseFloat(document.getElementById('m_p4').value);
+                if (isNaN(p4) || p4 > 200) { alert("Фаховий іспит: максимум 200 балів."); return; }
+                if (p4 < 100) { alert("Фаховий іспит: мінімум 100 балів."); return; }
+            }
+
+            let p1 = isTest ? getRatingScore(rawP1, tableTznk, 5, 33) : rawP1;
+            let p2 = 0;
+
+            if (mInterview) {
+
+                if (isTest) {
+
+                    if (rawP2 < 5) { alert("Ви не склали співбесіду (менше 5 балів)."); return; }
+                    p2 = getRatingScore(rawP2, tableLang, 5, 30);
+                } else {
+                    p2 = rawP2;
+                }
+            } else {
+
+                p2 = isTest ? getRatingScore(rawP2, tableLang, 5, 30) : rawP2;
+                if (!p1 || !p2) { alert("Введені бали ЄВІ нижче порогу складання."); return; }
+            }
+
+            if (config.type === 1) {
+                if (mInterview) {
+                    kb = (0.3 * p2) + (0.2 * p3) + (0.5 * p4);
+                } else {
+                    kb = (0.1 * p1) + (0.2 * p2) + (0.2 * p3) + (0.5 * p4);
+                }
+            } else {
+                if (mInterview) {
+                    kb = (0.4 * p2) + (0.6 * p3);
+                } else {
+                    kb = (0.2 * p1) + (0.2 * p2) + (0.6 * p3);
+                }
+            }
+
+            sumForWarning = 400;
+
+        } else {
+
+            let rawP1 = parseFloat(document.getElementById('a_p1').value);
+            const isInterview = document.getElementById('phd_interview').checked;
+            let p1 = 0;
+
+            if (isTest) {
+                if (rawP1 > 30) { alert("Іноземна мова: максимум 30 балів."); return; }
+            } else {
+                if (rawP1 > 200) { alert("Іноземна мова: максимум 200 балів."); return; }
+            }
+
+            if (isInterview) {
+                if (isTest) {
+                    if (rawP1 < 16) { alert("Ви не склали співбесіду (менше 16 балів)."); return; }
+                    p1 = getRatingScore(rawP1, tableLang, 5, 30);
+                } else {
+                    if (isNaN(rawP1) || rawP1 < 150) { alert("Ви не склали співбесіду (менше 150 балів)."); return; }
+                    p1 = rawP1;
+                }
+            } else {
+                if (!isTest) {
+                     if (isNaN(rawP1) || rawP1 < 100) { alert("Іноземна мова: мінімум 100 балів."); return; }
+                }
+                p1 = isTest ? getRatingScore(rawP1, tableLang, 5, 30) : rawP1;
+                if (!p1) { alert("Некоректний бал іноземної (нижче порогу)."); return; }
+            }
+
+            let pTznk = 0;
+            if (!isInterview) {
+                let rawTznk = parseFloat(document.getElementById('a_p_tznk').value);
+                
+                if (isTest) {
+                    if (rawTznk > 33) { alert("ТЗНК: максимум 33 бали."); return; }
+                } else {
+                    if (rawTznk > 200) { alert("ТЗНК: максимум 200 балів."); return; }
+                    if (rawTznk < 100) { alert("ТЗНК: мінімум 100 балів."); return; }
+                }
+
+                pTznk = isTest ? getRatingScore(rawTznk, tableTznk, 5, 33) : rawTznk;
+                if (!pTznk) { alert("Некоректний бал ТЗНК."); return; }
+            }
+
+            let rawP2 = parseFloat(document.getElementById('a_p2').value);
+            
+            if (isTest) {
+                if (rawP2 > 100) { alert("ЄВВ: максимум 100 балів."); return; }
+            } else {
+                if (rawP2 > 200) { alert("ЄВВ: максимум 200 балів."); return; }
+                if (rawP2 < 100) { alert("ЄВВ: мінімум 100 балів."); return; }
+            }
+            
+            let p2 = isTest ? getRatingScore(rawP2, tableMethodology, 25, 100) : rawP2;
+            if (!p2) { alert("Некоректний бал ЄВВ."); return; }
+
+            let p3 = parseFloat(document.getElementById('a_p3').value);
+            if (isNaN(p3) || p3 > 200) { alert("Вступний іспит: максимум 200 балів."); return; }
+            if (p3 < 100) { alert("Вступний іспит: мінімум 100 балів."); return; }
+
+            const hasExtra = document.getElementById('phd_extra_exam').checked;
+            let p4 = 0;
+            if (hasExtra) {
+                p4 = parseFloat(document.getElementById('a_p4').value);
+                if (isNaN(p4) || p4 > 200) { alert("Додатковий іспит: максимум 200 балів."); return; }
+                if (p4 < 100) { alert("Додатковий іспит: мінімум 100 балів."); return; }
+            }
+
+            if (hasExtra) {
+                kb = (0.2 * p1) + (0.2 * p2) + (0.3 * p3) + (0.3 * p4);
+            } else {
+                kb = (0.2 * p1) + (0.2 * p2) + (0.6 * p3);
+            }
+
+            if (!isInterview) sumForWarning = pTznk + p1;
+            else sumForWarning = 301;
+        }
+
+        if (kb < 100) kb = 100;
+        if (kb > 200) kb = 200;
+        
+        resultContainer.style.display = 'block';
+        resultDiv.innerHTML = `Ваш конкурсний бал: <span>${kb.toFixed(3)}</span>`;
+
+        if (sumForWarning < 300) {
+            warningDiv.style.display = 'block';
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        handleInputModeChange();
+    });
+</script>
