@@ -3,206 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Розрахунок конкурсного балу НМТ</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
-            background-color: #f9fafb;
-            margin: 0;
-            padding: 0;
-        }
-        .nmt-wrapper {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px 0;
-            background-color: transparent;
-            box-sizing: border-box;
-        }
-        .nmt-card {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            width: 100%;
-            max-width: 550px;
-            box-sizing: border-box;
-            border: 1px solid #e0e0e0;
-        }
-        .nmt-card h2 {
-            text-align: center;
-            color: #333;
-            margin: 0 0 25px 0;
-            font-size: 22px;
-            line-height: 1.3;
-        }
-        .nmt-form-group {
-            margin-bottom: 15px;
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            position: relative;
-        }
-        .nmt-card label {
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: #555;
-            font-size: 14px;
-            display: block;
-        }
-        .nmt-card input[type="text"],
-        .nmt-card input[type="number"],
-        .nmt-card select {
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            outline: none;
-            width: 100%;
-            box-sizing: border-box;
-            background-color: #fff;
-            color: #333;
-        }
-        .nmt-card input:focus, .nmt-card select:focus {
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-        }
-        
-        .search-wrapper { position: relative; }
-        .search-input-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-        .clear-btn {
-            position: absolute;
-            right: 12px;
-            cursor: pointer;
-            font-size: 18px;
-            color: #999;
-            display: none;
-            user-select: none;
-            z-index: 10;
-        }
-        .clear-btn:hover { color: #333; }
-        .custom-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 0 0 8px 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            max-height: 250px;
-            overflow-y: auto;
-            z-index: 1000;
-            display: none;
-            margin-top: 5px;
-        }
-        .dropdown-item {
-            padding: 10px 12px;
-            cursor: pointer;
-            border-bottom: 1px solid #f0f0f0;
-            font-size: 14px;
-            color: #333;
-            transition: background 0.2s;
-        }
-        .dropdown-item:last-child { border-bottom: none; }
-        .dropdown-item:hover { background-color: #f3f4f6; }
-        .dropdown-item strong { color: #4f46e5; }
-        
-        .nmt-radio-group {
-            display: flex;
-            gap: 15px;
-            margin-top: 5px;
-            flex-wrap: wrap;
-        }
-        .nmt-radio-label {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-weight: normal;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .nmt-hidden { display: none !important; }
-        
-        .input-mode-container {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
-        }
-        .mode-label {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            color: #444;
-        }
-        .mode-label input { width: auto !important; margin: 0; }
-        
-        .hint-text {
-            font-size: 12px;
-            color: #888;
-            margin-top: 4px;
-        }
+    <title>Розрахунок конкурсного балу</title>
+    
+<style>
+    .nmt-wrapper {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px 0;
+        background-color: transparent;
+        box-sizing: border-box;
+    }
+    .nmt-card {
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        width: 100%;
+        max-width: 550px;
+        font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+        box-sizing: border-box;
+        border: 1px solid #e0e0e0;
+    }
+    .nmt-card h2 {
+        text-align: center;
+        color: #333;
+        margin: 0 0 25px 0;
+        font-size: 22px;
+        line-height: 1.3;
+    }
+    .nmt-form-group {
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        position: relative;
+    }
+    .nmt-card label {
+        margin-bottom: 5px;
+        font-weight: 600;
+        color: #555;
+        font-size: 14px;
+        display: block;
+    }
+    .nmt-card input[type="text"],
+    .nmt-card input[type="number"],
+    .nmt-card select {
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+        outline: none;
+        width: 100%;
+        box-sizing: border-box;
+        background-color: #fff;
+        color: #333;
+    }
+    .nmt-card input:focus, .nmt-card select:focus {
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+    
+    .search-wrapper { position: relative; }
+    .search-input-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    .clear-btn {
+        position: absolute;
+        right: 12px;
+        cursor: pointer;
+        font-size: 18px;
+        color: #999;
+        display: none;
+        user-select: none;
+        z-index: 10;
+    }
+    .clear-btn:hover { color: #333; }
+    .custom-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 0 0 8px 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        max-height: 250px;
+        overflow-y: auto;
+        z-index: 1000;
+        display: none;
+        margin-top: 5px;
+    }
+    .dropdown-item {
+        padding: 10px 12px;
+        cursor: pointer;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 14px;
+        color: #333;
+        transition: background 0.2s;
+    }
+    .dropdown-item:last-child { border-bottom: none; }
+    .dropdown-item:hover { background-color: #f3f4f6; }
+    .dropdown-item strong { color: #4f46e5; }
+    
+    .nmt-radio-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 5px;
+        flex-wrap: wrap;
+    }
+    .nmt-radio-label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-weight: normal;
+        cursor: pointer;
+        font-size: 14px;
+    }
+    .nmt-hidden { display: none !important; }
+    
+    .input-mode-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+    }
+    .mode-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        color: #444;
+    }
+    .mode-label input { width: auto !important; margin: 0; }
+    
+    .hint-text {
+        font-size: 12px;
+        color: #888;
+        margin-top: 4px;
+    }
 
-        .nmt-btn {
-            width: 100%;
-            padding: 12px;
-            background-color: #4f46e5;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: background 0.3s;
-            line-height: normal;
-            box-sizing: border-box;
-        }
-        .nmt-btn:hover { background-color: #4338ca; }
-        
-        #nmt-result {
-            margin-top: 25px;
+    .nmt-btn {
+        width: 100%;
+        padding: 12px;
+        background-color: #4f46e5;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 15px;
+        transition: background 0.3s;
+        line-height: normal;
+        box-sizing: border-box;
+    }
+    .nmt-btn:hover { background-color: #4338ca; }
+    
+    #nmt-result {
+        margin-top: 25px;
+        padding: 20px;
+        background-color: #eef2ff;
+        border-radius: 10px;
+        text-align: center;
+        color: #312e81;
+        font-size: 18px;
+        display: none;
+        border: 1px solid #c7d2fe;
+    }
+    #nmt-result span {
+        display: block;
+        font-size: 32px;
+        font-weight: bold;
+        margin-top: 10px;
+        color: #4f46e5;
+    }
+    
+    @media (max-width: 600px) {
+        .nmt-card {
             padding: 20px;
-            background-color: #eef2ff;
-            border-radius: 10px;
-            text-align: center;
-            color: #312e81;
-            font-size: 18px;
-            display: none;
-            border: 1px solid #c7d2fe;
+            width: 90% !important;
+            margin: 0 auto;
         }
-        #nmt-result span {
-            display: block;
-            font-size: 32px;
-            font-weight: bold;
-            margin-top: 10px;
-            color: #4f46e5;
+        .input-mode-container {
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
         }
-        
-        @media (max-width: 600px) {
-            .nmt-card {
-                padding: 20px;
-                width: 90% !important;
-                margin: 0 auto;
-            }
-            .input-mode-container {
-                flex-direction: column;
-                gap: 10px;
-                align-items: center;
-            }
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
 
@@ -351,8 +347,9 @@
 
     const tUkr24 = {7:100,8:105,9:110,10:115,11:120,12:125,13:131,14:134,15:136,16:138,17:140,18:142,19:143,20:144,21:145,22:146,23:148,24:149,25:150,26:152,27:154,28:156,29:157,30:159,31:160,32:162,33:163,34:165,35:167,36:170,37:172,38:175,39:177,40:180,41:183,42:186,43:191,44:195,45:200};
     const tHist24 = {8:100,9:105,10:111,11:116,12:120,13:124,14:127,15:130,16:132,17:134,18:136,19:138,20:140,21:141,22:142,23:143,24:144,25:145,26:146,27:147,28:148,29:149,30:150,31:151,32:152,33:154,34:156,35:158,36:160,37:163,38:166,39:168,40:169,41:170,42:172,43:173,44:175,45:177,46:179,47:181,48:183,49:185,50:188,51:191,52:194,53:197,54:200};
-
-    const tUkr23 = {5:100,6:105,7:110,8:114,9:118,10:122,11:125,12:128,13:131,14:134,15:136,16:138,17:140,18:142,19:143,20:144,21:145,22:146,23:148,24:149,25:150,26:151,27:152,28:153,29:154,30:155,31:156,32:158,33:160,34:162,35:165,36:168,37:171,38:174,39:176,40:179,41:182,42:186,43:190,44:195,45:200};
+    const tChem245 = {6:100,7:108,8:116,9:124,10:128,11:132,12:135,13:138,14:140,15:142,16:143,17:144,18:146,19:147,20:148,21:149,22:150,23:152,24:154,25:156,26:158,27:160,28:162,29:164,30:166,31:168,32:170,33:172,34:175,35:178,36:182,37:186,38:190,39:195,40:200};
+    
+	const tUkr23 = {5:100,6:105,7:110,8:114,9:118,10:122,11:125,12:128,13:131,14:134,15:136,16:138,17:140,18:142,19:143,20:144,21:145,22:146,23:148,24:149,25:150,26:151,27:152,28:153,29:154,30:155,31:156,32:158,33:160,34:162,35:165,36:168,37:171,38:174,39:176,40:179,41:182,42:186,43:190,44:195,45:200};
     const tMath23 = {4:100,5:107,6:114,7:121,8:126,9:131,10:134,11:137,12:140,13:143,14:145,15:147,16:148,17:149,18:150,19:151,20:152,21:153,22:155,23:157,24:159,25:163,26:167,27:171,28:175,29:181,30:187,31:193,32:200};
     const tHist23 = {6:100,7:106,8:109,9:112,10:115,11:118,12:121,13:124,14:127,15:130,16:132,17:134,18:136,19:138,20:140,21:141,22:142,23:143,24:144,25:145,26:146,27:147,28:148,29:149,30:150,31:151,32:152,33:153,34:154,35:155,36:156,37:157,38:158,39:159,40:160,41:162,42:164,43:166,44:168,45:170,46:173,47:176,48:178,49:181,50:184,51:188,52:192,53:196,54:200};
     const tEng23 = {4:100,5:107,6:114,7:121,8:126,9:131,10:134,11:137,12:140,13:143,14:145,15:147,16:148,17:149,18:150,19:151,20:152,21:153,22:155,23:157,24:159,25:163,26:167,27:171,28:175,29:181,30:187,31:193,32:200};
@@ -643,7 +640,7 @@ K10 Цивільна безпека;0.35;0.4;0.25;0.25;0.35;0.4;0.4;0.25;0.25
             if (subjIndex == 0) rangeP4 = "5-32";
             else if (subjIndex == 1) rangeP4 = "7-46";
             else if (subjIndex == 2) rangeP4 = "5-32";
-            else if (subjIndex == 3) rangeP4 = "5-32";
+            else if (subjIndex == 3) { rangeP4 = (year === '2024' || year === '2025') ? "6-40" : "5-32"; }
             else if (subjIndex == 4) rangeP4 = "7-45";
             else if (subjIndex == 5) rangeP4 = "7-46";
         }
@@ -718,7 +715,7 @@ K10 Цивільна безпека;0.35;0.4;0.25;0.25;0.35;0.4;0.4;0.25;0.25
                 if (subj == 0) { if (rawP4 > 32) { alert("Іноземна мова: максимум 32 бали."); return; } p4 = getRating(rawP4, tEng, 5, 32); }
                 else if (subj == 1) { if (rawP4 > 46) { alert("Біологія: максимум 46 балів."); return; } p4 = getRating(rawP4, tBio, 7, 46); }
                 else if (subj == 2) { if (rawP4 > 32) { alert("Фізика: максимум 32 бали."); return; } p4 = getRating(rawP4, tPhy, 5, 32); }
-                else if (subj == 3) { if (rawP4 > 32) { alert("Хімія: максимум 32 бали."); return; } p4 = getRating(rawP4, tChem, 5, 32); }
+                else if (subj == 3) { if (rawP4 > 40) { alert("Хімія: максимум 40 балів."); return; } p4 = getRating(rawP4, tChem245, 6, 40); }
                 else if (subj == 4) { if (rawP4 > 45) { alert("Українська література: максимум 45 балів."); return; } p4 = getRating(rawP4, tLit, 7, 45); }
                 else if (subj == 5) { if (rawP4 > 46) { alert("Географія: максимум 46 балів."); return; } p4 = getRating(rawP4, tGeo, 7, 46); }
 
@@ -813,6 +810,5 @@ K10 Цивільна безпека;0.35;0.4;0.25;0.25;0.35;0.4;0.4;0.25;0.25
     
     document.addEventListener('DOMContentLoaded', () => { handleYearChange(); });
 </script>
-
 </body>
 </html>
